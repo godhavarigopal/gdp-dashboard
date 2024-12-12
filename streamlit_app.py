@@ -18,138 +18,62 @@ st.set_page_config(
 # Declare some useful functions.
 
 
-def plot_candlestick_chartX():
-    # Get today's date and calculate the date 3 months ago
+def plot_candlestick_chart():
+    # Define date range for the last 3 months
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=90)  # Use 90 days for better data coverage
+    start_date = end_date - timedelta(days=90)
 
-    # Fetch data with sufficient history
-    df = yf.download('CTSH', 
+    # Fetch data from Yahoo Finance
+    df = yf.download('AAPL',
                      start=start_date.strftime('%Y-%m-%d'),
                      end=end_date.strftime('%Y-%m-%d'),
-                     interval='1d')  # Ensure daily data
-                     
+                     interval='1d')
+
+    # Check if data is empty
     if df.empty:
-        st.error("No data retrieved. Please check the stock symbol or the date range.")
+        st.error("No data retrieved. Please adjust the date range or check the stock symbol.")
         return
-    
-    # Filter out rows with zero volume (market closed)
+
+    # Ensure valid columns and filter out non-trading days
     df = df[df['Volume'] > 0]
-    
-    # Debugging Information
-    st.write("Debug: DataFrame Contents")
-    st.dataframe(df)  # Interactive table view
+    if df.empty:
+        st.error("No trading data found in the selected range.")
+        return
 
-    # Create figure
+    # Convert index to datetime for Plotly compatibility
+    df.index = pd.to_datetime(df.index)
+
+    # Debugging information
+    st.write("DataFrame for Debugging:")
+    st.dataframe(df[['Open', 'High', 'Low', 'Close']])
+
+    # Create the candlestick chart
     fig = go.Figure(data=[go.Candlestick(
         x=df.index,
         open=df['Open'],
         high=df['High'],
         low=df['Low'],
         close=df['Close'],
-        increasing_line_color='green',  # Customize colors
+        increasing_line_color='green',
         decreasing_line_color='red'
     )])
 
-    # Update layout for better visibility
+    # Adjust chart layout
     fig.update_layout(
-        title='AAPL Stock Price',
-        yaxis_title='Stock Price (USD)',
-        xaxis_title='Date',
-        xaxis_rangeslider_visible=False,  # Disable range slider
-        height=600,  # Adjust height
-        width=800,   # Adjust width
-        template='plotly_dark'  # Use dark theme for better visibility
+        title="AAPL Candlestick Chart (Last 3 Months)",
+        yaxis_title="Stock Price (USD)",
+        xaxis_title="Date",
+        xaxis_rangeslider_visible=False,
+        height=600,
+        width=800,
+        template='plotly_white'
     )
 
-    # Display the chart
-    st.plotly_chart(fig, use_container_width=True)
-
-# Run the function
-plot_candlestick_chartX()
-
-def plot_candlestick_chart():
-    # Get today's date and calculate date 6 months ago
-    end_date = datetime.now()
-    start_date = end_date - timedelta(days=10)
-    
-    # Fetch data with sufficient history
-    df = yf.download('AAPL', 
-                    start=start_date.strftime('%Y-%m-%d'),
-                    end=end_date.strftime('%Y-%m-%d'))
-    
-    st.text("Inside plot_candlestick_chart")
-    # Display DataFrame for debugging
-    st.write("Debug: DataFrame Contents")
-    st.dataframe(df)  # Interactive table view
-    
-    # Create figure
-    fig = go.Figure(data=[go.Candlestick(
-        x=df.index,
-        open=df['Open'],
-        high=df['High'],
-        low=df['Low'],
-        close=df['Close'],
-        increasing_line_color='green',  # customize colors
-        decreasing_line_color='red'
-    )])
-    
-    # Update layout for better visibility
-    fig.update_layout(
-        title='AAPL Stock Price',
-        yaxis_title='Stock Price (USD)',
-        xaxis_title='Date',
-        xaxis_rangeslider_visible=False,  # disable rangeslider
-        height=600,  # increase height
-        width=800    # increase width
-    )
-    
-    # Display the chart
+    # Plot the chart in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
 # Run the function
 plot_candlestick_chart()
-
-def plot_candlestick_plotly(df):
-    st.text("Inside plot_candlestick_plotly")
-    # Display DataFrame for debugging
-    st.write("Debug: DataFrame Contents")
-    st.dataframe(df)  # Interactive table view
-
-
-    # Create candlestick chart with volume
-    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
-                       vertical_spacing=0.03, subplot_titles=('Candlestick', 'Volume'),
-                       row_width=[0.7, 0.3])
-
-    fig.add_trace(go.Candlestick(x=df.index,
-                                open=df['Open'],
-                                high=df['High'],
-                                low=df['Low'],
-                                close=df['Close'],
-                                name='OHLC'),
-                                row=1, col=1)
-
-    fig.add_trace(go.Bar(x=df.index, 
-                        y=df['Volume'],
-                        name='Volume'),
-                        row=2, col=1)
-
-    fig.update_layout(
-        title='Stock Price Analysis',
-        yaxis_title='Stock Price',
-        yaxis2_title='Volume',
-        xaxis_rangeslider_visible=False
-    )
-
-    # Display the plot in Streamlit
-    st.plotly_chart(fig, use_container_width=True)
-
-    
-# Example usage
-symbol = "TSLA"
-data = yf.download(symbol, start="2024-12-01")
-plot_candlestick_plotly(data)
 
 
 @st.cache_data
