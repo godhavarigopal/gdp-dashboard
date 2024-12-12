@@ -22,6 +22,7 @@ def plot_line_chart():
     # Add input fields in the sidebar
     st.sidebar.header('Chart Parameters')
     symbol = st.sidebar.text_input('Enter Stock Symbol:', 'AAPL')
+    number_of_days = st.sidebar.text_input('Enter Days:', '90')
     
     # Dropdown for interval selection
     interval_options = {
@@ -39,7 +40,7 @@ def plot_line_chart():
 
     # Define date range for the last 3 months
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=90)
+    start_date = end_date - timedelta(days=number_of_days)
 
     # Fetch data using user inputs
     df = yf.download(symbol,
