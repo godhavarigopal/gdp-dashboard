@@ -22,7 +22,6 @@ def plot_line_chart():
     # Add input fields in the sidebar
     st.sidebar.header('Chart Parameters')
     symbol = st.sidebar.text_input('Enter Stock Symbol:', 'AAPL')
-    number_of_days = st.sidebar.text_input('Enter Days:', 90)
     
     # Dropdown for interval selection
     interval_options = {
@@ -38,9 +37,19 @@ def plot_line_chart():
     )
     interval = interval_options[selected_interval]
 
-    # Define date range for the last 3 months
+    # Add days input with a slider
+    days = st.sidebar.slider(
+        'Select Number of Days:',
+        min_value=7,
+        max_value=365,
+        value=90,
+        step=1,
+        help='Choose the number of days of historical data to fetch'
+    )
+
+    # Define date range based on user input
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=number_of_days)
+    start_date = end_date - timedelta(days=days)
 
     # Fetch data using user inputs
     df = yf.download(symbol,
@@ -51,6 +60,9 @@ def plot_line_chart():
     if df.empty:
         st.error(f"No data retrieved for {symbol}. Please check the symbol or try a different interval.")
         return
+
+    # Display date range info
+    st.info(f"Showing data from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
 
     # Rest of your plotting code remains the same...
     plt.figure(figsize=(12, 6))
