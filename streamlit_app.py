@@ -22,7 +22,7 @@ def plot_line_chart():
     # Add input fields in the sidebar
     st.sidebar.header('Chart Parameters')
     symbol = st.sidebar.text_input('Enter Stock Symbol:', 'AAPL')
-    number_of_days = st.sidebar.text_input('Enter Days:', '90')
+    number_of_days = st.sidebar.text_input('Enter Days:', 90)
     
     # Dropdown for interval selection
     interval_options = {
