@@ -20,12 +20,17 @@ st.set_page_config(
 def plot_candlestick_chart():
     # Get today's date and calculate date 6 months ago
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=180)
+    start_date = end_date - timedelta(days=10)
     
     # Fetch data with sufficient history
     df = yf.download('AAPL', 
                     start=start_date.strftime('%Y-%m-%d'),
                     end=end_date.strftime('%Y-%m-%d'))
+    
+    st.text("Inside plot_candlestick_chart")
+    # Display DataFrame for debugging
+    st.write("Debug: DataFrame Contents")
+    st.dataframe(df)  # Interactive table view
     
     # Create figure
     fig = go.Figure(data=[go.Candlestick(
