@@ -21,10 +21,40 @@ def plot_candlestick_plotly(df):
     # Display DataFrame for debugging
     st.write("Debug: DataFrame Contents")
     st.dataframe(df)  # Interactive table view
+
+
+    # Create candlestick chart with volume
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
+                       vertical_spacing=0.03, subplot_titles=('Candlestick', 'Volume'),
+                       row_width=[0.7, 0.3])
+
+    fig.add_trace(go.Candlestick(x=df.index,
+                                open=df['Open'],
+                                high=df['High'],
+                                low=df['Low'],
+                                close=df['Close'],
+                                name='OHLC'),
+                                row=1, col=1)
+
+    fig.add_trace(go.Bar(x=df.index, 
+                        y=df['Volume'],
+                        name='Volume'),
+                        row=2, col=1)
+
+    fig.update_layout(
+        title='Stock Price Analysis',
+        yaxis_title='Stock Price',
+        yaxis2_title='Volume',
+        xaxis_rangeslider_visible=False
+    )
+
+    # Display the plot in Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
     
 # Example usage
-symbol = "AAPL"
-data = yf.download(symbol, start="2024-01-01")
+symbol = "TSLA"
+data = yf.download(symbol, start="2024-12-01")
 plot_candlestick_plotly(data)
 
 
