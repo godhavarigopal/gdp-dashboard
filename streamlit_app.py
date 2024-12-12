@@ -71,6 +71,12 @@ def debug_candlestick_chart():
     except Exception as e:
         st.error(f"Error occurred: {str(e)}")
         st.write("Full error details:", e)
+    
+    # Add these debug statements
+    st.write("Data Sample:")
+    st.write(df.head())
+    st.write("Data Shape:", df.shape)
+    st.write("Date Range:", df.index.min(), "to", df.index.max())
 
 debug_candlestick_chart()
 
