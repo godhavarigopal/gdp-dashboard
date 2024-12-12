@@ -24,7 +24,7 @@ def plot_candlestick_chartX():
     start_date = end_date - timedelta(days=90)  # Use 90 days for better data coverage
 
     # Fetch data with sufficient history
-    df = yf.download('AAPL', 
+    df = yf.download('CTSH', 
                      start=start_date.strftime('%Y-%m-%d'),
                      end=end_date.strftime('%Y-%m-%d'),
                      interval='1d')  # Ensure daily data
