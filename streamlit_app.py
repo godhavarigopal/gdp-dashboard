@@ -71,7 +71,7 @@ def plot_line_chart():
     plt.plot(df.index, df['Low'], label='Low', color='red', linestyle='--')
     plt.plot(df.index, df['Open'], label='Open', color='blue', linestyle='-')
     plt.plot(df.index, df['Close'], label='Close', color='black', linestyle='-')
-    plt.plot(df.index, ma199, label='MA100', color='orange')
+    plt.plot(df.index, ma100, label='MA100', color='orange')
     plt.title(f'{symbol} Stock Trends (High, Low, Open, Close)')
     plt.xlabel('Date')
     plt.ylabel('Stock Price (USD)')
