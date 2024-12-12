@@ -64,6 +64,7 @@ def plot_line_chart():
     st.info(f"Showing data from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
 
     ma100 = df.Close.rolling(100).mean()
+    ma200 = df.Close.rolling(200).mean()
     
     # Rest of your plotting code remains the same...
     plt.figure(figsize=(12, 6))
@@ -72,6 +73,7 @@ def plot_line_chart():
     plt.plot(df.index, df['Open'], label='Open', color='blue', linestyle='-')
     plt.plot(df.index, df['Close'], label='Close', color='black', linestyle='-')
     plt.plot(df.index, ma100, label='MA100', color='orange')
+    plt.plot(df.index, ma200, label='MA200', color='darkgreen')
     plt.title(f'{symbol} Stock Trends (High, Low, Open, Close)')
     plt.xlabel('Date')
     plt.ylabel('Stock Price (USD)')
