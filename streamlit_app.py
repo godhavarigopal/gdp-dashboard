@@ -16,6 +16,43 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 # Declare some useful functions.
 
+def plot_candlestick_chart():
+    # Get today's date and calculate date 6 months ago
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=180)
+    
+    # Fetch data with sufficient history
+    df = yf.download('AAPL', 
+                    start=start_date.strftime('%Y-%m-%d'),
+                    end=end_date.strftime('%Y-%m-%d'))
+    
+    # Create figure
+    fig = go.Figure(data=[go.Candlestick(
+        x=df.index,
+        open=df['Open'],
+        high=df['High'],
+        low=df['Low'],
+        close=df['Close'],
+        increasing_line_color='green',  # customize colors
+        decreasing_line_color='red'
+    )])
+    
+    # Update layout for better visibility
+    fig.update_layout(
+        title='AAPL Stock Price',
+        yaxis_title='Stock Price (USD)',
+        xaxis_title='Date',
+        xaxis_rangeslider_visible=False,  # disable rangeslider
+        height=600,  # increase height
+        width=800    # increase width
+    )
+    
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+# Run the function
+plot_candlestick_chart()
+
 def plot_candlestick_plotly(df):
     st.text("Inside plot_candlestick_plotly")
     # Display DataFrame for debugging
