@@ -17,62 +17,56 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 # Declare some useful functions.
 
-def debug_candlestick_chart():
-    # Clear any previous errors
-    st.empty()
-    
-    try:
-        # Get data
-        symbol = "AAPL"
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=180)
-        
-        df = yf.download(symbol, start=start_date, end=end_date)
-        
-        # Debug prints
-        st.write("Downloaded Data Shape:", df.shape)
-        st.write("First 5 rows:")
-        st.write(df.head())
-        
-        # Create figure with explicit sizing
-        fig = go.Figure(data=[go.Candlestick(
-            x=df.index,
-            open=df['Open'],
-            high=df['High'],
-            low=df['Low'],
-            close=df['Close']
-        )])
-    
-        # Calculate appropriate y-axis range
-        y_min = df['Low'].min() * 0.995  # Add 0.5% padding below
-        y_max = df['High'].max() * 1.005  # Add 0.5% padding above
-    
-        fig.update_layout(
-            yaxis=dict(
-                title='Price (USD)',
-                range=[y_min, y_max],  # Set explicit range
-                type='linear',
-                tickformat='$.2f',  # Format as currency
-                tickmode='auto',
-                nticks=20  # Adjust number of ticks as needed
-            ),
-            height=800,
-            width=1000
-        )
-    
-        st.plotly_chart(fig, use_container_width=True)
-        
-    except Exception as e:
-        st.error(f"Error occurred: {str(e)}")
-        st.write("Full error details:", e)
-    
-    # Add these debug statements
-    st.write("Data Sample:")
-    st.write(df.head())
-    st.write("Data Shape:", df.shape)
-    st.write("Date Range:", df.index.min(), "to", df.index.max())
 
-debug_candlestick_chart()
+def plot_candlestick_chartX():
+    # Get today's date and calculate the date 3 months ago
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=90)  # Use 90 days for better data coverage
+
+    # Fetch data with sufficient history
+    df = yf.download('AAPL', 
+                     start=start_date.strftime('%Y-%m-%d'),
+                     end=end_date.strftime('%Y-%m-%d'),
+                     interval='1d')  # Ensure daily data
+                     
+    if df.empty:
+        st.error("No data retrieved. Please check the stock symbol or the date range.")
+        return
+    
+    # Filter out rows with zero volume (market closed)
+    df = df[df['Volume'] > 0]
+    
+    # Debugging Information
+    st.write("Debug: DataFrame Contents")
+    st.dataframe(df)  # Interactive table view
+
+    # Create figure
+    fig = go.Figure(data=[go.Candlestick(
+        x=df.index,
+        open=df['Open'],
+        high=df['High'],
+        low=df['Low'],
+        close=df['Close'],
+        increasing_line_color='green',  # Customize colors
+        decreasing_line_color='red'
+    )])
+
+    # Update layout for better visibility
+    fig.update_layout(
+        title='AAPL Stock Price',
+        yaxis_title='Stock Price (USD)',
+        xaxis_title='Date',
+        xaxis_rangeslider_visible=False,  # Disable range slider
+        height=600,  # Adjust height
+        width=800,   # Adjust width
+        template='plotly_dark'  # Use dark theme for better visibility
+    )
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+# Run the function
+plot_candlestick_chartX()
 
 def plot_candlestick_chart():
     # Get today's date and calculate date 6 months ago
