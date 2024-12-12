@@ -6,6 +6,7 @@ import yfinance as yf
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from datetime import datetime, timedelta
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
