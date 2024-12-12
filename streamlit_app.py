@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import math
 from pathlib import Path
+import streamlit as st
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
@@ -11,6 +14,18 @@ st.set_page_config(
 
 # -----------------------------------------------------------------------------
 # Declare some useful functions.
+
+def plot_candlestick_plotly(df):
+    st.text("Inside plot_candlestick_plotly")
+    # Display DataFrame for debugging
+    st.write("Debug: DataFrame Contents")
+    st.dataframe(df)  # Interactive table view
+    
+# Example usage
+symbol = "AAPL"
+data = yf.download(symbol, start="2024-01-01")
+plot_candlestick_plotly(data)
+
 
 @st.cache_data
 def get_gdp_data():
