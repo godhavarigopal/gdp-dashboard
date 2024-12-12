@@ -18,6 +18,7 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 # Declare some useful functions.
 
+"""
 def plot_line_chart():
     # Add input fields in the sidebar
     st.sidebar.header('Chart Parameters')
@@ -80,7 +81,7 @@ def plot_line_chart():
 
 # Run the function
 plot_line_chart()
-
+"""
 
 def plot_candlestick_chart2():
     # Add input fields in the sidebar
