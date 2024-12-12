@@ -82,6 +82,109 @@ def plot_line_chart():
 plot_line_chart()
 
 
+def plot_candlestick_chart2():
+    # Add input fields in the sidebar
+    st.sidebar.header('Candlestick Chart Parameters')
+    symbol = st.sidebar.text_input('Enter Stock Symbol:', 'AAPL')
+    
+    # Dropdown for interval selection
+    interval_options = {
+        'Daily': '1d',
+        'Weekly': '1wk',
+        'Monthly': '1mo',
+        'Hourly': '1h',
+        '15 Minutes': '15m'
+    }
+    selected_interval = st.sidebar.selectbox(
+        'Select Time Interval:',
+        list(interval_options.keys())
+    )
+    interval = interval_options[selected_interval]
+
+    # Add days input with a slider
+    days = st.sidebar.slider(
+        'Select Number of Days:',
+        min_value=7,
+        max_value=365,
+        value=90,
+        step=1,
+        help='Choose the number of days of historical data to fetch'
+    )
+
+    # Define date range based on user input
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=days)
+
+    # Fetch data using user inputs
+    df = yf.download(symbol,
+                     start=start_date.strftime('%Y-%m-%d'),
+                     end=end_date.strftime('%Y-%m-%d'),
+                     interval=interval)
+
+    if df.empty:
+        st.error(f"No data retrieved for {symbol}. Please check the symbol or try a different interval.")
+        return
+
+    # Display date range info
+    st.info(f"Showing data from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+
+    # Create the candlestick chart using plotly
+    fig = go.Figure(data=[go.Candlestick(x=df.index,
+                open=df['Open'],
+                high=df['High'],
+                low=df['Low'],
+                close=df['Close'])])
+
+    # Update the layout
+    fig.update_layout(
+        title=f'{symbol} Candlestick Chart',
+        yaxis_title='Stock Price (USD)',
+        xaxis_title='Date',
+        template='plotly_white',
+        height=600
+    )
+
+    # Add volume bar chart
+    fig.add_trace(go.Bar(x=df.index, 
+                        y=df['Volume'],
+                        name='Volume',
+                        yaxis='y2'))
+
+    # Update layout to include volume
+    fig.update_layout(
+        yaxis2=dict(
+            title='Volume',
+            overlaying='y',
+            side='right'
+        )
+    )
+
+    # Display the chart in Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Add technical indicators
+    st.subheader('Technical Indicators')
+    # Calculate and display moving averages
+    df['MA20'] = df['Close'].rolling(window=20).mean()
+    df['MA50'] = df['Close'].rolling(window=50).mean()
+    
+    # Create a line chart with moving averages
+    fig_ma = go.Figure()
+    fig_ma.add_trace(go.Scatter(x=df.index, y=df['Close'], name='Close Price'))
+    fig_ma.add_trace(go.Scatter(x=df.index, y=df['MA20'], name='20-day MA'))
+    fig_ma.add_trace(go.Scatter(x=df.index, y=df['MA50'], name='50-day MA'))
+    
+    fig_ma.update_layout(
+        title='Moving Averages',
+        yaxis_title='Price',
+        template='plotly_white'
+    )
+    
+    st.plotly_chart(fig_ma, use_container_width=True)
+
+# Run the function
+plot_candlestick_chart2()
+
 def plot_candlestick_chart():
     # Define date range for the last 3 months
     end_date = datetime.now()
