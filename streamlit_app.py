@@ -19,38 +19,50 @@ st.set_page_config(
 # Declare some useful functions.
 
 def plot_line_chart():
+    # Add input fields in the sidebar
+    st.sidebar.header('Chart Parameters')
+    symbol = st.sidebar.text_input('Enter Stock Symbol:', 'AAPL')
+    
+    # Dropdown for interval selection
+    interval_options = {
+        'Daily': '1d',
+        'Weekly': '1wk',
+        'Monthly': '1mo',
+        'Hourly': '1h',
+        '15 Minutes': '15m'
+    }
+    selected_interval = st.sidebar.selectbox(
+        'Select Time Interval:',
+        list(interval_options.keys())
+    )
+    interval = interval_options[selected_interval]
+
     # Define date range for the last 3 months
     end_date = datetime.now()
     start_date = end_date - timedelta(days=90)
 
-    # Fetch data from Yahoo Finance
-    df = yf.download('AAPL',
+    # Fetch data using user inputs
+    df = yf.download(symbol,
                      start=start_date.strftime('%Y-%m-%d'),
                      end=end_date.strftime('%Y-%m-%d'),
-                     interval='1d')
+                     interval=interval)
 
-    # Check if data is empty
     if df.empty:
-        st.error("No data retrieved. Please adjust the date range or check the stock symbol.")
+        st.error(f"No data retrieved for {symbol}. Please check the symbol or try a different interval.")
         return
 
-    # Debugging information
-    st.write("DataFrame for Debugging:")
-    st.dataframe(df[['Open', 'High', 'Low', 'Close']])
-
-    # Plot the data
+    # Rest of your plotting code remains the same...
     plt.figure(figsize=(12, 6))
     plt.plot(df.index, df['High'], label='High', color='green', linestyle='--')
     plt.plot(df.index, df['Low'], label='Low', color='red', linestyle='--')
     plt.plot(df.index, df['Open'], label='Open', color='blue', linestyle='-')
     plt.plot(df.index, df['Close'], label='Close', color='black', linestyle='-')
-    plt.title('AAPL Stock Trends (High, Low, Open, Close)')
+    plt.title(f'{symbol} Stock Trends (High, Low, Open, Close)')
     plt.xlabel('Date')
     plt.ylabel('Stock Price (USD)')
     plt.legend()
     plt.grid(True)
 
-    # Render the plot in Streamlit
     st.pyplot(plt)
 
 # Run the function
