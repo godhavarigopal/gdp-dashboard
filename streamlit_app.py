@@ -40,30 +40,33 @@ def debug_candlestick_chart():
             open=df['Open'],
             high=df['High'],
             low=df['Low'],
-            close=df['Close'],
-            increasing_line_color='green',
-            decreasing_line_color='red'
+            close=df['Close']
         )])
-        
-        # Comprehensive layout settings
+    
+        # Fix y-axis scale
         fig.update_layout(
-            title=f'{symbol} Stock Price',
-            yaxis_title='Price (USD)',
-            xaxis_title='Date',
-            height=800,
-            width=1000,
-            showlegend=True,
             yaxis=dict(
-                gridcolor="lightgrey",
-                showgrid=True,
-                autorange=True
+                title='Price (USD)',
+                autorange=True,  # Enable autorange
+                type='linear',   # Linear scale for prices
+                tickformat='$.2f'  # Format as currency
             ),
-            xaxis=dict(
-                rangeslider_visible=False,
-                type='date'
-            ),
-            plot_bgcolor='white',
-            paper_bgcolor='white'
+            height=800,  # Increase height for better visibility
+            width=1000
+        )
+    
+        # Add range buttons for better navigation
+        fig.update_xaxes(
+            rangeslider_visible=False,
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=1, label="1m", step="month", stepmode="backward"),
+                    dict(count=6, label="6m", step="month", stepmode="backward"),
+                    dict(count=1, label="YTD", step="year", stepmode="todate"),
+                    dict(count=1, label="1y", step="year", stepmode="backward"),
+                    dict(step="all")
+                ])
+            )
         )
         
         st.plotly_chart(fig, use_container_width=True)
