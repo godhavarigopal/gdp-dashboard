@@ -17,6 +17,63 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 # Declare some useful functions.
 
+def debug_candlestick_chart():
+    # Clear any previous errors
+    st.empty()
+    
+    try:
+        # Get data
+        symbol = "AAPL"
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=180)
+        
+        df = yf.download(symbol, start=start_date, end=end_date)
+        
+        # Debug prints
+        st.write("Downloaded Data Shape:", df.shape)
+        st.write("First 5 rows:")
+        st.write(df.head())
+        
+        # Create figure with explicit sizing
+        fig = go.Figure(data=[go.Candlestick(
+            x=df.index,
+            open=df['Open'],
+            high=df['High'],
+            low=df['Low'],
+            close=df['Close'],
+            increasing_line_color='green',
+            decreasing_line_color='red'
+        )])
+        
+        # Comprehensive layout settings
+        fig.update_layout(
+            title=f'{symbol} Stock Price',
+            yaxis_title='Price (USD)',
+            xaxis_title='Date',
+            height=800,
+            width=1000,
+            showlegend=True,
+            yaxis=dict(
+                gridcolor="lightgrey",
+                showgrid=True,
+                autorange=True
+            ),
+            xaxis=dict(
+                rangeslider_visible=False,
+                type='date'
+            ),
+            plot_bgcolor='white',
+            paper_bgcolor='white'
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+    except Exception as e:
+        st.error(f"Error occurred: {str(e)}")
+        st.write("Full error details:", e)
+
+debug_candlestick_chart()
+
 def plot_candlestick_chart():
     # Get today's date and calculate date 6 months ago
     end_date = datetime.now()
