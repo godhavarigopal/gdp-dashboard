@@ -7,6 +7,7 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
@@ -16,6 +17,44 @@ st.set_page_config(
 
 # -----------------------------------------------------------------------------
 # Declare some useful functions.
+
+def plot_line_chart():
+    # Define date range for the last 3 months
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=90)
+
+    # Fetch data from Yahoo Finance
+    df = yf.download('AAPL',
+                     start=start_date.strftime('%Y-%m-%d'),
+                     end=end_date.strftime('%Y-%m-%d'),
+                     interval='1d')
+
+    # Check if data is empty
+    if df.empty:
+        st.error("No data retrieved. Please adjust the date range or check the stock symbol.")
+        return
+
+    # Debugging information
+    st.write("DataFrame for Debugging:")
+    st.dataframe(df[['Open', 'High', 'Low', 'Close']])
+
+    # Plot the data
+    plt.figure(figsize=(12, 6))
+    plt.plot(df.index, df['High'], label='High', color='green', linestyle='--')
+    plt.plot(df.index, df['Low'], label='Low', color='red', linestyle='--')
+    plt.plot(df.index, df['Open'], label='Open', color='blue', linestyle='-')
+    plt.plot(df.index, df['Close'], label='Close', color='black', linestyle='-')
+    plt.title('AAPL Stock Trends (High, Low, Open, Close)')
+    plt.xlabel('Date')
+    plt.ylabel('Stock Price (USD)')
+    plt.legend()
+    plt.grid(True)
+
+    # Render the plot in Streamlit
+    st.pyplot(plt)
+
+# Run the function
+plot_line_chart()
 
 
 def plot_candlestick_chart():
